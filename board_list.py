@@ -21,6 +21,8 @@ from flet import (
     margin
 )
 from item import Item
+from data_store import DataStore
+from memory_store import store
 
 
 class BoardList(UserControl):
@@ -29,10 +31,12 @@ class BoardList(UserControl):
     def __init__(self, board, title: str, color: str = ""):
         super().__init__()
         self.board_list_id = next(BoardList.id_counter)
+        self.store: DataStore = store
         self.board = board
         self.title = title
         self.color = color
         self.items = Column([], tight=True, spacing=4)
+        self.items.controls = self.store.get_items(self.board_list_id)
 
     def build(self):
         self.item_name = TextField(
@@ -119,6 +123,7 @@ class BoardList(UserControl):
             self, self.item_name.value)
 
         self.items.controls.append(new_item)
+        self.store.add_item(self.board_list_id, new_item)
         self.item_name.value = ""
 
         self.view.update()

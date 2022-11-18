@@ -1,4 +1,4 @@
-import textwrap
+import itertools
 import flet
 from flet import (
     DragTarget,
@@ -16,13 +16,18 @@ from flet import (
     colors,
     padding,
 )
-#from main import app
+from data_store import DataStore
+from memory_store import store
 
 
 class Item(UserControl):
+    id_counter = itertools.count()
+
     def __init__(self, list, item_text: str):
         super().__init__()
+        self.item_id = next(Item.id_counter)
         self.list = list
+        self.store: DataStore = store
         self.item_text = item_text
         self.card_item = Card(
             content=Row(

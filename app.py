@@ -10,6 +10,7 @@ from flet import (
     colors,
     icons,
     margin,
+    theme
 )
 from app_layout import AppLayout
 
@@ -26,7 +27,8 @@ class TrelloApp:
         self.appbar = AppBar(
             leading=Icon(icons.GRID_GOLDENRATIO_ROUNDED),
             leading_width=100,
-            title=Text("Trolli", size=32, text_align="start"),
+            title=Text("Trolli", font_family="Pacifico",
+                       size=32, text_align="start"),
             center_title=False,
             toolbar_height=75,
             bgcolor=colors.LIGHT_BLUE_ACCENT_700,
@@ -49,10 +51,17 @@ class TrelloApp:
 if __name__ == "__main__":
 
     def main(page: Page):
+
         page.title = "Flet Trello clone"
         page.padding = 0
+        page.theme = theme.Theme(
+            font_family="Verdana")
+        page.theme.page_transitions.windows = "cupertino"
+        page.fonts = {
+            "Pacifico": "/Pacifico-Regular.ttf"
+        }
         page.bgcolor = colors.BLUE_GREY_200
-        app = TrelloApp(page)
         page.update()
+        app = TrelloApp(page)
 
     flet.app(target=main, assets_dir="assets", view=flet.WEB_BROWSER)
