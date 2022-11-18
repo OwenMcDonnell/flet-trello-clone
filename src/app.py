@@ -64,4 +64,4 @@ if __name__ == "__main__":
         page.update()
         app = TrelloApp(page)
 
-    flet.app(target=main, assets_dir="assets", view=flet.WEB_BROWSER)
+    flet.app(target=main, assets_dir="../assets", view=flet.WEB_BROWSER)
