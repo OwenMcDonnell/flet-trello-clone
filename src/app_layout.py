@@ -1,24 +1,25 @@
 from flet.buttons import RoundedRectangleBorder
 from flet import (
-    Page,
     Control,
     Column,
     Container,
     IconButton,
+    Page,
     Row,
     Text,
-    TextField,
     TextButton,
-    PopupMenuButton,
-    PopupMenuItem,
     IconButton,
     ButtonStyle,
-    padding,
-    colors,
-    border,
+    PopupMenuButton,
+    PopupMenuItem,
+    TextField,
     border_radius,
+    colors,
     icons,
+    padding,
+    border
 )
+from board import Board
 from sidebar import Sidebar
 from data_store import DataStore
 from memory_store import store
@@ -28,16 +29,20 @@ class AppLayout(Row):
     def __init__(
         self,
         app,
+        page: Page,
+        # store: DataStore,
         *args,
         **kwargs
     ):
         super().__init__(*args, **kwargs)
-        self.store: DataStore = store
         self.app = app
+        self.page = page
+        self.page.on_resize = self.page_resize
+        self.store: DataStore = store
         self.toggle_nav_rail_button = IconButton(
             icon=icons.ARROW_CIRCLE_LEFT, icon_color=colors.BLUE_GREY_400, selected=False,
             selected_icon=icons.ARROW_CIRCLE_RIGHT, on_click=self.toggle_nav_rail)
-        self.sidebar = Sidebar(self)
+        self.sidebar = Sidebar(self, page)
         self.members_view = Text("members view")
         self.all_boards_view = Column([
             Row([
@@ -67,9 +72,11 @@ class AppLayout(Row):
                 TextField(hint_text="Search all boards", autofocus=False, content_padding=padding.only(left=10),
                           width=200, height=40, text_size=12,
                           border_color=colors.BLACK26, focused_border_color=colors.BLUE_ACCENT, suffix_icon=icons.SEARCH)
-            ])
+            ]),
+            Row([Text("No Boards to Display")])
         ], expand=True)
         self._active_view: Control = self.all_boards_view
+
         self.controls = [self.sidebar,
                          self.toggle_nav_rail_button, self.active_view]
 
@@ -81,6 +88,7 @@ class AppLayout(Row):
     def active_view(self, view):
         self._active_view = view
         self.controls[-1] = self._active_view
+        self.sidebar.sync_board_destinations()
         self.update()
 
     def set_board_view(self, i):
@@ -89,6 +97,7 @@ class AppLayout(Row):
         self.sidebar.top_nav_rail.selected_index = None
         self.sidebar.update()
         self.page.update()
+        self.page_resize()
 
     def set_all_boards_view(self):
         self.active_view = self.all_boards_view
@@ -105,9 +114,11 @@ class AppLayout(Row):
         self.sidebar.update()
         self.page.update()
 
-    def toggle_nav_rail(self, e):
-        self.sidebar.visible = not self.sidebar.visible
-        self.toggle_nav_rail_button.selected = not self.toggle_nav_rail_button.selected
+    def page_resize(self, e=None):
+        #self.active_view = self.controls[-1]
+        if type(self.active_view) is Board:
+            self.active_view.resize(self.sidebar.visible,
+                                    self.page.width, self.page.height)
         self.page.update()
 
     def hydrate_all_boards_view(self):
@@ -147,3 +158,9 @@ class AppLayout(Row):
     def board_click(self, e):
         self.sidebar.bottom_nav_change(
             self.store.get_boards().index(e.control.data))
+
+    def toggle_nav_rail(self, e):
+        self.sidebar.visible = not self.sidebar.visible
+        self.toggle_nav_rail_button.selected = not self.toggle_nav_rail_button.selected
+        self.page_resize()
+        self.page.update()

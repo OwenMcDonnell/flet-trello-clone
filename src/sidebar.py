@@ -2,27 +2,33 @@ from flet import (
     UserControl,
     Column,
     Container,
+    IconButton,
     Row,
     Text,
-    TextField,
+    IconButton,
     NavigationRail,
     NavigationRailDestination,
+    TextField,
     alignment,
     border_radius,
     colors,
     icons,
     padding,
     margin,
+    border,
 )
 from data_store import DataStore
 from memory_store import store
 
 
 class Sidebar(UserControl):
-    def __init__(self, app_layout):
+
+    def __init__(self, app_layout, page):
         super().__init__()
         self.store: DataStore = store
         self.app_layout = app_layout
+        #self.page = page
+        self.nav_rail_visible = True
         self.top_nav_items = [
             NavigationRailDestination(
                 label_content=Text("Boards"),
@@ -55,13 +61,14 @@ class Sidebar(UserControl):
             expand=True,
             bgcolor=colors.BLUE_GREY,
         )
+        self.toggle_nav_rail_button = IconButton(icons.ARROW_BACK)
 
     def build(self):
         self.view = Container(
             content=Column([
                 Row([
                     Text("Workspace"),
-                ], alignment="center"),
+                ], alignment="spaceBetween"),
                 # divider
                 Container(
                     bgcolor=colors.BLACK26,
@@ -86,6 +93,7 @@ class Sidebar(UserControl):
             width=250,
             expand=True,
             bgcolor=colors.BLUE_GREY,
+            visible=self.nav_rail_visible,
         )
         return self.view
 
@@ -116,6 +124,11 @@ class Sidebar(UserControl):
             )
         self.view.update()
 
+    def toggle_nav_rail(self, e):
+        self.view.visible = not self.view.visible
+        self.view.update()
+        self.page.update()
+
     def board_name_focus(self, e):
         e.control.read_only = False
         e.control.border = "outline"
@@ -127,6 +140,7 @@ class Sidebar(UserControl):
         self.app_layout.hydrate_all_boards_view()
         e.control.read_only = True
         e.control.border = "none"
+        # e.control.update()
         self.page.update()
 
     def top_nav_change(self, e):

@@ -4,12 +4,13 @@ from flet import (
     Column,
     Row,
     FloatingActionButton,
-    Container,
-    GridView,
-    AlertDialog,
-    Text,
-    TextField,
     ElevatedButton,
+    Text,
+    GridView,
+    Container,
+    TextField,
+    AlertDialog,
+    Container,
     icons,
     border_radius,
     border,
@@ -19,8 +20,8 @@ from flet import (
     margin
 )
 from board_list import BoardList
-from data_store import DataStore
 from memory_store import store
+from data_store import DataStore
 
 
 class Board(UserControl):
@@ -28,10 +29,12 @@ class Board(UserControl):
 
     def __init__(self, app, name: str):
         super().__init__()
+        self.board_id = next(Board.id_counter)
         self.store: DataStore = store
-        self.board_id = next(BoardList.id_counter)
         self.app = app
+        # self.visible = False
         self.name = name
+        # self.nav_rail_index = None
         self.add_list_button = FloatingActionButton(
             icon=icons.ADD, text="add a list", height=30, on_click=self.create_list)
 
@@ -79,19 +82,19 @@ class Board(UserControl):
         option_dict = {
             colors.LIGHT_GREEN: self.color_option_creator(colors.LIGHT_GREEN),
             colors.RED_200: self.color_option_creator(colors.RED_200),
-            colors.PINK_300: self.color_option_creator(colors.PINK_300),
             colors.AMBER_500: self.color_option_creator(colors.AMBER_500),
+            colors.PINK_300: self.color_option_creator(colors.PINK_300),
             colors.ORANGE_300: self.color_option_creator(colors.ORANGE_300),
+            colors.LIGHT_BLUE: self.color_option_creator(colors.LIGHT_BLUE),
             colors.DEEP_ORANGE_300: self.color_option_creator(colors.DEEP_ORANGE_300),
             colors.PURPLE_100: self.color_option_creator(colors.PURPLE_100),
+            colors.RED_700: self.color_option_creator(colors.RED_700),
             colors.TEAL_500: self.color_option_creator(colors.TEAL_500),
             colors.YELLOW_400: self.color_option_creator(colors.YELLOW_400),
-            colors.LIGHT_BLUE: self.color_option_creator(colors.LIGHT_BLUE),
             colors.PURPLE_400: self.color_option_creator(colors.PURPLE_400),
             colors.BROWN_300: self.color_option_creator(colors.BROWN_300),
             colors.CYAN_500: self.color_option_creator(colors.CYAN_500),
             colors.BLUE_GREY_500: self.color_option_creator(colors.BLUE_GREY_500),
-            colors.GREEN_500: self.color_option_creator(colors.GREEN_500),
         }
 
         def set_color(e):
@@ -111,14 +114,15 @@ class Board(UserControl):
             color_options.controls.append(v)
 
         def close_dlg(e):
+            print("e.control: ", e.control)
             if (hasattr(e.control, "text") and not e.control.text == "Cancel") or type(e.control) is TextField:
-                new_list = BoardList(self.remove_list, dialog_text.value,
+                new_list = BoardList(self, dialog_text.value,
                                      color=color_options.data)
                 self.add_list(new_list)
+                # self.store.add_list(self.board_id, new_list)
             dialog.open = False
             self.page.update()
             self.update()
-
         dialog_text = TextField(label="New List Name", on_submit=close_dlg)
         dialog = AlertDialog(
             title=Text("Name your new list"),
@@ -133,8 +137,9 @@ class Board(UserControl):
                         text="Create", bgcolor=colors.BLUE_200, on_click=close_dlg)
                 ], alignment="spaceBetween")
             ], tight=True, alignment="center"),
-        )
 
+            on_dismiss=lambda e: print("Modal dialog dismissed!"),
+        )
         self.page.dialog = dialog
         dialog.open = True
         self.page.update()

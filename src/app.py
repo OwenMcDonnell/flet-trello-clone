@@ -1,40 +1,53 @@
+from board import Board
 import flet
+from flet.buttons import RoundedRectangleBorder
 from flet import (
     View,
+    AlertDialog,
     Column,
     Row,
     Container,
     Icon,
     Page,
     Text,
-    TextField,
-    AlertDialog,
     ElevatedButton,
     AppBar,
     PopupMenuButton,
     PopupMenuItem,
+    TextField,
     colors,
     icons,
     padding,
-    margin,
     theme,
+    margin,
+    border
 )
-from board import Board
+from sidebar import Sidebar
 from user import User
-from app_layout import AppLayout
 from data_store import DataStore
+#from memory_store import InMemoryStore
 from memory_store import store
+from app_layout import AppLayout
 
 
 class TrelloApp:
     def __init__(self, page: Page):
-        self.store: DataStore = store
+        #self._lock = threading.Lock()
         self.page = page
+        #self.user = user
+        self.store: DataStore = store
         self.page.on_route_change = self.route_change
+        #self.sidebar = Sidebar(self, page)
+        self.boards = self.store.get_boards()
+
+        self.login_profile_button = PopupMenuItem(
+            text="Log in", on_click=self.login)
         self.appbar_items = [
-            PopupMenuItem(text="Login", on_click=self.login),
+            self.login_profile_button,
             PopupMenuItem(),  # divider
-            PopupMenuItem(text="Settings")
+            PopupMenuItem(
+                text="Data snapshot", on_click=self.store.data_snapshot
+            )
         ]
         self.appbar = AppBar(
             leading=Icon(icons.GRID_GOLDENRATIO_ROUNDED),
@@ -54,8 +67,9 @@ class TrelloApp:
             ],
         )
         self.page.appbar = self.appbar
-        self.layout = AppLayout(
-            self, tight=True, expand=True, vertical_alignment="start")
+        self.page.update()
+        self.layout = AppLayout(self, self.page, self.store,
+                                tight=True, expand=True, vertical_alignment="start")
 
     def initialize(self):
         self.page.views.append(
@@ -157,8 +171,7 @@ class TrelloApp:
     def create_new_board(self, board_name):
         new_board = Board(self, board_name)
         self.store.add_board(new_board)
-        self.current_board = new_board
-        self.layout.active_view = new_board
+        #self.layout.active_view = new_board
         self.layout.hydrate_all_boards_view()
 
     def delete_board(self, e):
@@ -182,5 +195,9 @@ if __name__ == "__main__":
         page.update()
         app = TrelloApp(page)
         app.initialize()
+        page.update()
 
-    flet.app(target=main, assets_dir="../assets", view=flet.WEB_BROWSER)
+    #print("flet version: ", flet.version.version)
+    #print("flet path: ", flet.__file__)
+
+    flet.app(target=main, assets_dir="assets", view=flet.WEB_BROWSER)
