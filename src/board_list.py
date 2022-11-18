@@ -1,8 +1,6 @@
 import itertools
 from flet import (
     UserControl,
-    Draggable,
-    DragTarget,
     Column,
     Row,
     Text,
@@ -18,7 +16,6 @@ from flet import (
     border,
     colors,
     padding,
-    margin
 )
 from item import Item
 from data_store import DataStore
@@ -28,18 +25,18 @@ from memory_store import store
 class BoardList(UserControl):
     id_counter = itertools.count()
 
-    def __init__(self, board, title: str, color: str = ""):
+    def __init__(self, remove_list, title: str, color: str = ""):
         super().__init__()
-        self.board_list_id = next(BoardList.id_counter)
         self.store: DataStore = store
-        self.board = board
+        self.board_list_id = next(BoardList.id_counter)
+        self.remove_list = remove_list
         self.title = title
         self.color = color
         self.items = Column([], tight=True, spacing=4)
-        self.items.controls = self.store.get_items(self.board_list_id)
 
     def build(self):
-        self.item_name = TextField(
+
+        self.new_item_field = TextField(
             label="new card name", height=50, bgcolor=colors.WHITE)
 
         self.edit_field = Row([
@@ -80,11 +77,10 @@ class BoardList(UserControl):
         self.view = Container(
             content=Column([
                 self.header,
-                self.item_name,
+                self.new_item_field,
                 TextButton(content=Row([Icon(icons.ADD), Text("add card", color=colors.BLACK38)], tight=True),
                            on_click=self.add_item_handler),
                 self.items,
-                self.end_indicator
             ], spacing=4, tight=True, data=self.title),
             width=250,
             border=border.all(2, colors.BLACK12),
@@ -98,7 +94,7 @@ class BoardList(UserControl):
         return self.view
 
     def delete_list(self, e):
-        self.board.remove_list(self, e)
+        self.remove_list(self, e)
 
     def edit_title(self, e):
         self.header.controls[0] = self.edit_field
@@ -114,7 +110,7 @@ class BoardList(UserControl):
         self.update()
 
     def add_item_handler(self, e):
-        if self.item_name.value == "":
+        if self.new_item_field.value == "":
             return
         self.add_item()
 
