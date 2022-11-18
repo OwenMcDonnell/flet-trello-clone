@@ -1,5 +1,6 @@
 from flet.buttons import RoundedRectangleBorder
 from flet import (
+    Page,
     Control,
     Column,
     Container,
@@ -79,10 +80,18 @@ class AppLayout(Row):
     @active_view.setter
     def active_view(self, view):
         self._active_view = view
+        self.controls[-1] = self._active_view
         self.update()
 
+    def set_board_view(self, i):
+        self.active_view = self.store.get_boards()[i]
+        self.sidebar.bottom_nav_rail.selected_index = i
+        self.sidebar.top_nav_rail.selected_index = None
+        self.sidebar.update()
+        self.page.update()
+
     def set_all_boards_view(self):
-        self.controls[-1] = self.all_boards_view
+        self.active_view = self.all_boards_view
         self.hydrate_all_boards_view()
         self.sidebar.top_nav_rail.selected_index = 0
         self.sidebar.bottom_nav_rail.selected_index = None
@@ -90,7 +99,7 @@ class AppLayout(Row):
         self.page.update()
 
     def set_members_view(self):
-        self.controls[-1] = self.members_view
+        self.active_view = self.members_view
         self.sidebar.top_nav_rail.selected_index = 1
         self.sidebar.bottom_nav_rail.selected_index = None
         self.sidebar.update()

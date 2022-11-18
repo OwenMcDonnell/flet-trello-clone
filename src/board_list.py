@@ -33,6 +33,7 @@ class BoardList(UserControl):
         self.title = title
         self.color = color
         self.items = Column([], tight=True, spacing=4)
+        self.items.controls = self.store.get_items(self.board_list_id)
 
     def build(self):
 
@@ -114,17 +115,27 @@ class BoardList(UserControl):
             return
         self.add_item()
 
-    def add_item(self, item: str = None):
-        new_item = Item(self, item) if item else Item(
-            self, self.item_name.value)
+    def add_item(self):
+        control_to_add = Column([
+            Container(
+                bgcolor=colors.BLACK26,
+                border_radius=border_radius.all(30),
+                height=3,
+                alignment=alignment.center_right,
+                width=200,
+                opacity=0.0
+            )
+        ])
 
-        self.items.controls.append(new_item)
-        self.store.add_item(self.board_list_id, new_item)
-        self.item_name.value = ""
+        new_item = Item(self, self.new_item_field.value)
+        control_to_add.controls.append(new_item)
+        self.items.controls.append(control_to_add)
+        self.new_item_field.value = ""
 
         self.view.update()
         self.page.update()
 
     def remove_item(self, item):
-        self.items.controls.remove(item)
+        controls_list = [x.controls[1] for x in self.items.controls]
+        del self.items.controls[controls_list.index(item)]
         self.view.update()

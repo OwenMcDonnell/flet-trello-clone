@@ -42,10 +42,7 @@ class Board(UserControl):
             self.add_list(l)
 
         self.list_wrap = Row(
-            controls=[
-                self.board_lists,
-                self.add_list_button
-            ],
+            self.board_lists,
             vertical_alignment="start",
             visible=True,
             scroll="auto",
@@ -66,9 +63,16 @@ class Board(UserControl):
             data=self,
             margin=margin.all(0),
             padding=padding.only(top=10, right=0),
-            height=self.page.height,
+            height=self.app.page.height,
         )
         return self.view
+
+    def resize(self, nav_rail_extended, width, height):
+        self.list_wrap.width = (
+            width - 310) if nav_rail_extended else (width - 50)
+        self.view.height = height
+        self.list_wrap.update()
+        self.view.update()
 
     def create_list(self, e):
 
@@ -143,3 +147,14 @@ class Board(UserControl):
     def add_list(self, list: BoardList):
         self.board_lists.insert(-1, list)
         self.store.add_list(self.board_id, list)
+
+    def color_option_creator(self, color: str):
+        return Container(
+            bgcolor=color,
+            border_radius=border_radius.all(50),
+            height=10,
+            width=10,
+            padding=padding.all(5),
+            alignment=alignment.center,
+            data=color
+        )

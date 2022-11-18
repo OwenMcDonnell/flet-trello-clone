@@ -101,6 +101,8 @@ class Sidebar(UserControl):
                         hint_text=b.name,
                         text_size=12,
                         read_only=True,
+                        on_focus=self.board_name_focus,
+                        on_blur=self.board_name_blur,
                         border="none",
                         height=50,
                         width=150,
@@ -114,14 +116,34 @@ class Sidebar(UserControl):
             )
         self.view.update()
 
+    def board_name_focus(self, e):
+        e.control.read_only = False
+        e.control.border = "outline"
+        e.control.update()
+
+    def board_name_blur(self, e):
+        self.store.update_board(self.store.get_boards()[e.control.data], {
+            'name': e.control.value})
+        self.app_layout.hydrate_all_boards_view()
+        e.control.read_only = True
+        e.control.border = "none"
+        self.page.update()
+
     def top_nav_change(self, e):
         index = e if (type(e) == int) else e.control.selected_index
         self.bottom_nav_rail.selected_index = None
         self.top_nav_rail.selected_index = index
         self.view.update()
+        if index == 0:
+            self.page.route = "/boards"
+        elif index == 1:
+            self.page.route = "/members"
+        self.page.update()
 
     def bottom_nav_change(self, e):
         index = e if (type(e) == int) else e.control.selected_index
         self.top_nav_rail.selected_index = None
         self.bottom_nav_rail.selected_index = index
+        self.page.route = f"/board/{index}"
         self.view.update()
+        self.page.update()
