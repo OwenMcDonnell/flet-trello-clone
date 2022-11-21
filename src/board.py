@@ -32,9 +32,7 @@ class Board(UserControl):
         self.board_id = next(Board.id_counter)
         self.store: DataStore = store
         self.app = app
-        # self.visible = False
         self.name = name
-        # self.nav_rail_index = None
         self.add_list_button = FloatingActionButton(
             icon=icons.ADD, text="add a list", height=30, on_click=self.create_list)
 
@@ -119,7 +117,6 @@ class Board(UserControl):
                 new_list = BoardList(self, dialog_text.value,
                                      color=color_options.data)
                 self.add_list(new_list)
-                # self.store.add_list(self.board_id, new_list)
             dialog.open = False
             self.page.update()
             self.update()

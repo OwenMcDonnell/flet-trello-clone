@@ -15,7 +15,6 @@ from flet import (
     icons,
     padding,
     margin,
-    border,
 )
 from data_store import DataStore
 from memory_store import store
@@ -140,7 +139,6 @@ class Sidebar(UserControl):
         self.app_layout.hydrate_all_boards_view()
         e.control.read_only = True
         e.control.border = "none"
-        # e.control.update()
         self.page.update()
 
     def top_nav_change(self, e):

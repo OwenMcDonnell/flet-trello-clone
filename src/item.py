@@ -7,18 +7,11 @@ from flet import (
     Draggable,
     Container,
     Checkbox,
-    Column,
     Row,
     UserControl,
     Card,
-    icons,
     border_radius,
-    border,
-    alignment,
-    colors,
-    padding,
 )
-#from main import app
 from memory_store import store
 from data_store import DataStore
 
@@ -32,14 +25,12 @@ class Item(UserControl):
         self.store: DataStore = store
         self.list = list
         self.item_text = item_text
-        # card for now but will switch to more flexible component
         self.card_item = Card(
             content=Row(
                 [Container(
                     content=Checkbox(label=f"{self.item_text}", width=200),
                     border_radius=border_radius.all(5))],
                 width=200,
-                # height=40,
                 wrap=True
             ),
             elevation=1,

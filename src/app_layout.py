@@ -30,7 +30,6 @@ class AppLayout(Row):
         self,
         app,
         page: Page,
-        # store: DataStore,
         *args,
         **kwargs
     ):
@@ -115,7 +114,6 @@ class AppLayout(Row):
         self.page.update()
 
     def page_resize(self, e=None):
-        #self.active_view = self.controls[-1]
         if type(self.active_view) is Board:
             self.active_view.resize(self.sidebar.visible,
                                     self.page.width, self.page.height)
@@ -149,7 +147,6 @@ class AppLayout(Row):
                 bgcolor=colors.WHITE60,
                 padding=padding.all(10),
                 width=250,
-                # on_click=self.board_click,
                 data=b
             ) for b in self.store.get_boards()
         ], wrap=True)

@@ -21,7 +21,6 @@ from flet import (
     border,
     colors,
     padding,
-    margin
 )
 from item import Item
 from memory_store import store
@@ -200,21 +199,18 @@ class BoardList(UserControl):
 
         # rearrange (i.e. drag drop from same list)
         if ((from_index is not None) and (to_index is not None)):
-            #print("rearrange: ", to_index, from_index)
             self.items.controls.insert(
                 to_index, self.items.controls.pop(from_index))
             self.set_indicator_opacity(swap_control, 0.0)
 
         # insert (drag from other list to middle of this list)
         elif (to_index is not None):
-            #print("insert: ", to_index)
             new_item = Item(self, item)
             control_to_add.controls.append(new_item)
             self.items.controls.insert(to_index, control_to_add)
 
         # add new (drag from other list to end of this list, or use add item button)
         else:
-            #print("add new: ", item)
             new_item = Item(self, item) if item else Item(
                 self, self.new_item_field.value)
             control_to_add.controls.append(new_item)
@@ -222,14 +218,11 @@ class BoardList(UserControl):
             self.store.add_item(self.board_list_id, new_item)
             self.new_item_field.value = ""
 
-        #print("self.items: ", self.items.controls)
         self.view.update()
         self.page.update()
 
     def remove_item(self, item: Item):
-        #print("item from remove_item: ", item)
         controls_list = [x.controls[1] for x in self.items.controls]
-        #print("controls_list: ", controls_list)
         del self.items.controls[controls_list.index(item)]
         self.store.remove_item(self.board_list_id, item.item_id)
         self.view.update()

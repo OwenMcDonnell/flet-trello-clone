@@ -25,19 +25,15 @@ from flet import (
 from sidebar import Sidebar
 from user import User
 from data_store import DataStore
-#from memory_store import InMemoryStore
 from memory_store import store
 from app_layout import AppLayout
 
 
 class TrelloApp:
     def __init__(self, page: Page):
-        #self._lock = threading.Lock()
         self.page = page
-        #self.user = user
         self.store: DataStore = store
         self.page.on_route_change = self.route_change
-        #self.sidebar = Sidebar(self, page)
         self.boards = self.store.get_boards()
 
         self.login_profile_button = PopupMenuItem(
@@ -97,7 +93,6 @@ class TrelloApp:
                 self.page.update()
                 return
             else:
-                print("name and password: ", user_name.value, password.value)
                 user = User(user_name.value, password.value)
                 if user not in self.store.get_users():
                     self.store.add_user(user)
@@ -124,7 +119,6 @@ class TrelloApp:
         self.page.update()
 
     def route_change(self, e):
-        #print("changed route: ", e.route)
         split_route = e.route.split('/')
         match split_route[1:]:
             case[""]:
@@ -171,7 +165,6 @@ class TrelloApp:
     def create_new_board(self, board_name):
         new_board = Board(self, board_name)
         self.store.add_board(new_board)
-        #self.layout.active_view = new_board
         self.layout.hydrate_all_boards_view()
 
     def delete_board(self, e):
@@ -196,8 +189,5 @@ if __name__ == "__main__":
         app = TrelloApp(page)
         app.initialize()
         page.update()
-
-    #print("flet version: ", flet.version.version)
-    #print("flet path: ", flet.__file__)
 
     flet.app(target=main, assets_dir="assets", view=flet.WEB_BROWSER)
