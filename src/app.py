@@ -20,9 +20,8 @@ from flet import (
     padding,
     theme,
     margin,
-    border
+    TemplateRoute,
 )
-from sidebar import Sidebar
 from user import User
 from data_store import DataStore
 from memory_store import store
@@ -35,7 +34,6 @@ class TrelloApp:
         self.store: DataStore = store
         self.page.on_route_change = self.route_change
         self.boards = self.store.get_boards()
-
         self.login_profile_button = PopupMenuItem(
             text="Log in", on_click=self.login)
         self.appbar_items = [
@@ -119,23 +117,18 @@ class TrelloApp:
         self.page.update()
 
     def route_change(self, e):
-        split_route = e.route.split('/')
-        match split_route[1:]:
-            case[""]:
-                self.page.go("/boards")
-
-            case ["board", board_number]:
-                if int(board_number) > len(self.store.get_boards()):
-                    self.page.go("/")
-                    return
-                self.layout.set_board_view(int(board_number))
-
-            case ["boards"]:
-                self.layout.set_all_boards_view()
-
-            case ["members"]:
-                self.layout.set_members_view()
-
+        troute = TemplateRoute(self.page.route)
+        if troute.match("/"):
+            self.page.go("/boards")
+        elif troute.match("/board/:id"):
+            if int(troute.id) > len(self.store.get_boards()):
+                self.page.go("/")
+                return
+            self.layout.set_board_view(int(troute.id))
+        elif troute.match("/boards"):
+            self.layout.set_all_boards_view()
+        elif troute.match("/members"):
+            self.layout.set_members_view()
         self.page.update()
 
     def add_board(self, e):
@@ -190,4 +183,4 @@ if __name__ == "__main__":
         app.initialize()
         page.update()
 
-    flet.app(target=main, assets_dir="assets", view=flet.WEB_BROWSER)
+    flet.app(target=main, assets_dir="../assets", view=flet.WEB_BROWSER)
