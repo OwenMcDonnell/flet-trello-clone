@@ -39,9 +39,7 @@ class TrelloApp:
         self.appbar_items = [
             self.login_profile_button,
             PopupMenuItem(),  # divider
-            PopupMenuItem(
-                text="Data snapshot", on_click=self.store.data_snapshot
-            )
+            PopupMenuItem(text="Settings")
         ]
         self.appbar = AppBar(
             leading=Icon(icons.GRID_GOLDENRATIO_ROUNDED),
@@ -165,6 +163,7 @@ class TrelloApp:
         self.page.dialog = dialog
         dialog.open = True
         self.page.update()
+        dialog_text.focus()
 
     def create_new_board(self, board_name):
         new_board = Board(self, board_name)

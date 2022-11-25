@@ -148,6 +148,7 @@ class Board(UserControl):
         self.page.dialog = dialog
         dialog.open = True
         self.page.update()
+        dialog_text.focus()
 
     def remove_list(self, list: BoardList, e):
         self.board_lists.remove(list)
