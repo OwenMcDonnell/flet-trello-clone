@@ -57,7 +57,6 @@ class Item(UserControl):
 
         # skip if item is dropped on itself
         if (src.content.content == e.control.content):
-            print("skip")
             self.card_item.elevation = 1
             self.list.set_indicator_opacity(self, 0.0)
             e.control.update()

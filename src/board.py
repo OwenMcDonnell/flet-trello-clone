@@ -112,15 +112,24 @@ class Board(UserControl):
             color_options.controls.append(v)
 
         def close_dlg(e):
-            print("e.control: ", e.control)
-            if (hasattr(e.control, "text") and not e.control.text == "Cancel") or type(e.control) is TextField:
+            if (hasattr(e.control, "text") and not e.control.text == "Cancel") or (type(e.control) is TextField and e.control.value != ""):
                 new_list = BoardList(self, dialog_text.value,
                                      color=color_options.data)
                 self.add_list(new_list)
             dialog.open = False
             self.page.update()
             self.update()
-        dialog_text = TextField(label="New List Name", on_submit=close_dlg)
+
+        def textfield_change(e):
+            if dialog_text.value == "":
+                create_button.disabled = True
+            else:
+                create_button.disabled = False
+            self.page.update()
+        dialog_text = TextField(label="New List Name",
+                                on_submit=close_dlg, on_change=textfield_change)
+        create_button = ElevatedButton(
+            text="Create", bgcolor=colors.BLUE_200, on_click=close_dlg, disabled=True)
         dialog = AlertDialog(
             title=Text("Name your new list"),
             content=Column([
@@ -130,8 +139,7 @@ class Board(UserControl):
                 Row([
                     ElevatedButton(
                         text="Cancel", on_click=close_dlg),
-                    ElevatedButton(
-                        text="Create", bgcolor=colors.BLUE_200, on_click=close_dlg)
+                    create_button
                 ], alignment="spaceBetween")
             ], tight=True, alignment="center"),
 

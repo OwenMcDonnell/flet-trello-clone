@@ -132,12 +132,24 @@ class TrelloApp:
         self.page.update()
 
     def add_board(self, e):
+
         def close_dlg(e):
-            if (hasattr(e.control, "text") and not e.control.text == "Cancel") or type(e.control) is TextField:
+            if (hasattr(e.control, "text") and not e.control.text == "Cancel") or (type(e.control) is TextField and e.control.value != ""):
                 self.create_new_board(dialog_text.value)
             dialog.open = False
             self.page.update()
-        dialog_text = TextField(label="New Board Name", on_submit=close_dlg)
+
+        def textfield_change(e):
+            if dialog_text.value == "":
+                create_button.disabled = True
+            else:
+                create_button.disabled = False
+            self.page.update()
+
+        dialog_text = TextField(label="New Board Name",
+                                on_submit=close_dlg, on_change=textfield_change)
+        create_button = ElevatedButton(
+            text="Create", bgcolor=colors.BLUE_200, on_click=close_dlg, disabled=True)
         dialog = AlertDialog(
             title=Text("Name your new board"),
             content=Column([
@@ -145,8 +157,7 @@ class TrelloApp:
                 Row([
                     ElevatedButton(
                         text="Cancel", on_click=close_dlg),
-                    ElevatedButton(
-                        text="Create", bgcolor=colors.BLUE_200, on_click=close_dlg)
+                    create_button
                 ], alignment="spaceBetween")
             ], tight=True),
             on_dismiss=lambda e: print("Modal dialog dismissed!"),
@@ -178,7 +189,6 @@ if __name__ == "__main__":
             "Pacifico": "/Pacifico-Regular.ttf"
         }
         page.bgcolor = colors.BLUE_GREY_200
-        page.update()
         app = TrelloApp(page)
         app.initialize()
         page.update()
