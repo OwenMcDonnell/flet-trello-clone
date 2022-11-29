@@ -60,7 +60,7 @@ class TrelloApp:
         )
         self.page.appbar = self.appbar
         self.page.update()
-        self.layout = AppLayout(self, self.page, self.store,
+        self.layout = AppLayout(self, self.page,
                                 tight=True, expand=True, vertical_alignment="start")
 
     def initialize(self):
@@ -192,4 +192,5 @@ if __name__ == "__main__":
         app.initialize()
         page.update()
 
-    flet.app(target=main, assets_dir="../assets", view=flet.WEB_BROWSER)
+    flet.app(target=main, assets_dir="../assets",
+             view=flet.WEB_BROWSER, port=8080)
