@@ -76,8 +76,9 @@ class TrelloApp:
             )
         )
         self.page.update()
-        # create an initial board for demonstration
-        self.create_new_board("My First Board")
+        # create an initial board for demonstration if no boards
+        if len(self.boards) == 0:
+            self.create_new_board("My First Board")
         self.page.go("/")
 
     def login(self, e):
