@@ -133,7 +133,8 @@ class BoardList(UserControl):
         self.update()
 
     def item_will_drag_accept(self, e):
-        self.end_indicator.opacity = 1.0
+        if e.data == "true":
+            self.end_indicator.opacity = 1.0
         self.update()
 
     def item_drag_leave(self, e):
@@ -151,7 +152,8 @@ class BoardList(UserControl):
         self.update()
 
     def list_will_drag_accept(self, e):
-        self.inner_list.border = border.all(2, colors.BLACK)
+        if e.data == "true":
+            self.inner_list.border = border.all(2, colors.BLACK)
         self.update()
 
     def list_drag_leave(self, e):

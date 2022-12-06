@@ -79,7 +79,8 @@ class Item(UserControl):
         e.control.update()
 
     def drag_will_accept(self, e):
-        self.list.set_indicator_opacity(self, 1.0)
+        if e.data == "true":
+            self.list.set_indicator_opacity(self, 1.0)
         self.card_item.elevation = 20 if e.data == "true" else 1
         e.control.update()
 
