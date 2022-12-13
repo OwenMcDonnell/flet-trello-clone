@@ -23,14 +23,13 @@ from flet import (
     padding,
 )
 from item import Item
-from memory_store import store
 from data_store import DataStore
 
 
 class BoardList(UserControl):
     id_counter = itertools.count()
 
-    def __init__(self, board: "Board", title: str, color: str = ""):
+    def __init__(self, board: "Board", store: DataStore, title: str, color: str = ""):
         super().__init__()
         self.board_list_id = next(BoardList.id_counter)
         self.store: DataStore = store
@@ -43,7 +42,7 @@ class BoardList(UserControl):
     def build(self):
 
         self.new_item_field = TextField(
-            label="new card name", height=50, bgcolor=colors.WHITE)
+            label="new card name", height=50, bgcolor=colors.WHITE, on_submit=self.add_item_handler)
 
         self.end_indicator = Container(
             bgcolor=colors.BLACK26,
@@ -68,12 +67,12 @@ class BoardList(UserControl):
                             PopupMenuItem(
                                 content=Text(value="Edit", style="labelMedium",
                                              text_align="center", color=self.color),
-                                text="Edit", icon=icons.CREATE_ROUNDED, on_click=self.edit_title),
+                                on_click=self.edit_title),
                             PopupMenuItem(),
                             PopupMenuItem(
                                 content=Text(value="Delete", style="labelMedium",
                                              text_align="center", color=self.color),
-                                text="Delete", icon=icons.DELETE_ROUNDED, on_click=self.delete_list),
+                                on_click=self.delete_list),
                             PopupMenuItem(),
                             PopupMenuItem(
                                 content=Text(value="Move List", style="labelMedium",
@@ -207,14 +206,14 @@ class BoardList(UserControl):
 
         # insert (drag from other list to middle of this list)
         elif (to_index is not None):
-            new_item = Item(self, item)
+            new_item = Item(self, self.store, item)
             control_to_add.controls.append(new_item)
             self.items.controls.insert(to_index, control_to_add)
 
         # add new (drag from other list to end of this list, or use add item button)
         else:
-            new_item = Item(self, item) if item else Item(
-                self, self.new_item_field.value)
+            new_item = Item(self, self.store, item) if item else Item(
+                self, self.store, self.new_item_field.value)
             control_to_add.controls.append(new_item)
             self.items.controls.append(control_to_add)
             self.store.add_item(self.board_list_id, new_item)

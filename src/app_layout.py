@@ -22,7 +22,6 @@ from flet import (
 from board import Board
 from sidebar import Sidebar
 from data_store import DataStore
-from memory_store import store
 
 
 class AppLayout(Row):
@@ -30,6 +29,7 @@ class AppLayout(Row):
         self,
         app,
         page: Page,
+        store: DataStore,
         *args,
         **kwargs
     ):
@@ -41,7 +41,7 @@ class AppLayout(Row):
         self.toggle_nav_rail_button = IconButton(
             icon=icons.ARROW_CIRCLE_LEFT, icon_color=colors.BLUE_GREY_400, selected=False,
             selected_icon=icons.ARROW_CIRCLE_RIGHT, on_click=self.toggle_nav_rail)
-        self.sidebar = Sidebar(self, page)
+        self.sidebar = Sidebar(self, self.store, page)
         self.members_view = Text("members view")
         self.all_boards_view = Column([
             Row([
